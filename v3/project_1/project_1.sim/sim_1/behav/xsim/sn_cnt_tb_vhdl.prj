@@ -1,0 +1,13 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../../versuche/v1/dff.vhd" \
+"../../../../../versuche/v2/my_comps.vhd" \
+"../../../../../versuche/v1/shift4.vhd" \
+"../../../../../versuche/v2/sn_cnt.vhd" \
+"../../../../../versuche/v2/stim_gen.vhd" \
+"../../../../../versuche/v2/sn_cnt_tb.vhd" \
+"../../../../../versuche/v3/aal1_crc_gen.vhd" \
+"../../../../../versuche/v1/shift4_tb.vhd" \
+
+# Do not sort compile order
+nosort
