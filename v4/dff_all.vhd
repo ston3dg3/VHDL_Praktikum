@@ -18,7 +18,7 @@ begin
     if (clk'EVENT and clk = '1') then
       if (res = '1') then
         q <= '0';
-      elsif () then
+      else
         q <= d;
       end if;
     end if;
