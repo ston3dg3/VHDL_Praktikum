@@ -5,52 +5,39 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity counter_int is
-  --   generic
-  --   (
-  --     count_size : integer;
-  --   );
+  generic
+  (
+    constant count_size : integer := 24
+  );
+
   port
   (
     enab, res, clk : in std_logic;
-    cnt_val        : out integer);
+    cnt_val        : out std_logic_vector(5 downto 0)
+  );
 end counter_int;
 
 architecture Behavioral of counter_int is
 
-  component dff is
-    port
-    (
-      d, clk : in std_logic;
-      q      : out std_logic);
-  end component;
-
-  constant count_size : integer := 25;
-  signal cnt_out      : std_logic;
-  signal s            : std_logic_vector(count_size - 1 downto 0) := (others => '0');
+  signal count : integer range count_size to 0 := 0;
 
 begin
-  dff1 : for i in 0 to count_size generate
-    i_in : if i = 0 generate
-      s(i) <= enab;
-    end generate;
-    i_mid : if i < count_size generate
-      fm : dff port map
-        (d => s(i), clk => clk, q => s(i + 1));
-    end generate;
-    i_out : if i = count_size generate
-      fo : dff port
-      map(d => s(i), clk => clk, q => cnt_out);
-    end generate;
-  end generate;
-  cnt_val <= to_integer(signed(s));
-  end Behavioral;
+
+  -- control process for the counter
+  process
+
+  begin
+    if (clk'EVENT and clk = '1') then
+      if (res = '1') then
+        count <= 0;
+      else
+        count <= count + 1;
+      end if;
+
+      -- put the value of count at the output with proper conversion:
+      cnt_val <= std_logic_vector(to_signed(count, 6));
+    end if;
+  end process;
+
+end Behavioral;
