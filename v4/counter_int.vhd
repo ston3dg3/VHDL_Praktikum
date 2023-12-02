@@ -8,37 +8,37 @@ use IEEE.numeric_std.all;
 entity counter_int is
   generic
   (
-    constant count_size : integer := 24
+    constant count_size : integer := 25
   );
 
   port
   (
     enab, res, clk : in std_logic;
-    cnt_val        : out std_logic_vector(5 downto 0)
+    cnt_val        : out std_logic_vector(4 downto 0)
   );
 end counter_int;
 
 architecture Behavioral of counter_int is
 
-  signal count : integer range count_size to 0 := 0;
+  signal count : integer range 0 to count_size := 0;
 
 begin
 
   -- control process for the counter
-  process (count)
+  process (clk)
 
   begin
     if (clk'EVENT and clk = '1') then
       if (res = '1') then
         count <= 0;
-      else
+      elsif (enab = '1') then
         count <= count + 1;
       end if;
 
       report "curerent count: " & integer'image(count);
 
       -- put the value of count at the output with proper conversion:
-      cnt_val <= std_logic_vector(to_signed(count, 6));
+      cnt_val <= std_logic_vector(to_unsigned(count, 5));
     end if;
   end process;
 

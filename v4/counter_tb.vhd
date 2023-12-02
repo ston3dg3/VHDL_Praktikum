@@ -9,10 +9,10 @@ architecture stimul of counter_tb is
     port
     (
       clk, enab, res : in std_logic;
-      cnt_val        : out std_logic_vector(6 downto 0));
+      cnt_val        : out std_logic_vector(4 downto 0));
   end component;
   signal c, e, r : std_logic := '0';
-  signal c_v     : std_logic_vector(6 downto 0);
+  signal c_v     : std_logic_vector(4 downto 0);
 
 begin
   i1 : counter_int port map
