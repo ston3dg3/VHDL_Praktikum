@@ -1,17 +1,22 @@
 
 -- D-FlipFlop
 
-ENTITY dff IS
-	PORT (d, clk : IN bit;
-	      q      : OUT bit);
-END dff;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
 
-ARCHITECTURE behav OF dff IS
-BEGIN
-	PROCESS(clk)
-	BEGIN
-		IF (clk'EVENT AND clk='1') THEN
-			q <= d;
-		END IF ;
-	END PROCESS ;
-END behav ;
+entity dff is
+  port
+  (
+    d, clk : in std_logic;
+    q      : out std_logic);
+end dff;
+
+architecture behav of dff is
+begin
+  process (clk)
+  begin
+    if (clk'EVENT and clk = '1') then
+      q <= d;
+    end if;
+  end process;
+end behav;

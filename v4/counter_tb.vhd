@@ -1,35 +1,38 @@
-LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
+library IEEE;
+use IEEE.std_logic_1164.all;
 
-ENTITY counter_tb IS
-END counter_tb;
+entity counter_tb is
+end counter_tb;
 
-ARCHITECTURE stimul OF counter_tb IS
-    COMPONENT counter
-	PORT(clk, enab, res : IN std_logic;
-	    cnt_val : OUT std_logic_vector(4 DOWNTO 0));
-    END COMPONENT;
-    SIGNAL c,e,r : std_logic := '0';
-    SIGNAL c_v : std_logic_vector(4 DOWNTO 0);
+architecture stimul of counter_tb is
+  component counter_int
+    port
+    (
+      clk, enab, res : in std_logic;
+      cnt_val        : out std_logic_vector(4 downto 0));
+  end component;
+  signal c, e, r : std_logic := '0';
+  signal c_v     : std_logic_vector(4 downto 0);
 
-BEGIN
-    i1: counter PORT MAP(clk=>c, enab=>e, res=>r, cnt_val=>c_v);
+begin
+  i1 : counter_int port map
+    (clk => c, enab => e, res => r, cnt_val => c_v);
 
-    c <= NOT c AFTER 10 ns;
+  c <= not c after 10 ns;
 
-    PROCESS
-    BEGIN
-	WAIT FOR 45 ns;
-	r<='1';
-	WAIT FOR 20 ns;
-	r<='0';
-	WAIT FOR 30 ns;
-	e<='1';
-	WAIT FOR 200 ns;
-	e<='0';
-	WAIT FOR 20 ns;
-	e<='1';
-	WAIT FOR 1200 ns;
-	WAIT;
-    END PROCESS;
-END stimul;
+  process
+  begin
+    wait for 45 ns;
+    r <= '1';
+    wait for 20 ns;
+    r <= '0';
+    wait for 30 ns;
+    e <= '1';
+    wait for 200 ns;
+    e <= '0';
+    wait for 20 ns;
+    e <= '1';
+    wait for 1200 ns;
+    wait;
+  end process;
+end stimul;
