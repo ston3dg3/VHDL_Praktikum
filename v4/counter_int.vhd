@@ -20,7 +20,7 @@ end counter_int;
 
 architecture Behavioral of counter_int is
 
-  signal count : integer range 0 to count_size := 0;
+  variable count : integer range 0 to count_size := 0;
 
 begin
 
@@ -29,13 +29,13 @@ begin
 
   begin
     if (clk'EVENT and clk = '1') then
-      if (res = '1') then
-        count <= 0;
+      if (res = '1' or count = 24) then
+        count := 0;
       elsif (enab = '1') then
-        count <= count + 1;
+        count := count + 1;
       end if;
 
-      report "curerent count: " & integer'image(count);
+      -- report "curerent count: " & integer'image(count);
 
       -- put the value of count at the output with proper conversion:
       cnt_val <= std_logic_vector(to_unsigned(count, 5));
