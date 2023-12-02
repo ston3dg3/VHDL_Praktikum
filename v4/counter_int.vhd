@@ -14,13 +14,13 @@ entity counter_int is
   port
   (
     enab, res, clk : in std_logic;
-    cnt_val        : out std_logic_vector(4 downto 0)
+    cnt_val        : out std_logic_vector
   );
 end counter_int;
 
 architecture Behavioral of counter_int is
 
-  shared variable count : integer range 0 to count_size := 0;
+  shared variable count : integer;
 
 begin
 
