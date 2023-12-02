@@ -20,7 +20,7 @@ end counter_int;
 
 architecture Behavioral of counter_int is
 
-  variable count : integer range 0 to count_size := 0;
+  shared variable count : integer range 0 to count_size := 0;
 
 begin
 
