@@ -14,7 +14,7 @@ entity counter_int is
   port
   (
     enab, res, clk : in std_logic;
-    cnt_val        : out std_logic_vector
+    cnt_val        : out std_logic_vector(4 downto 0)
   );
 end counter_int;
 
