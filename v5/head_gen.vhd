@@ -81,16 +81,31 @@ begin
           hg_done    <= '0';
       end case;
 
+      -- get the first 4 bits of the head_intern register and assign them to head_data if out_cnt_val is between 0 and 3 inclusive, when its 4, set to HEC, otherwise set to 0
+      case to_integer(unsigned(out_cnt_val)) is
+        when 0 => head_data      <= head_intern(31 downto 24);
+        when 1 => head_data      <= head_intern(23 downto 16);
+        when 2 => head_data      <= head_intern(15 downto 8);
+        when 3 => head_data      <= head_intern(7 downto 0);
+        when 4 => head_data      <= hec_val;
+        when others => head_data <= (others => '0');
+      end case;
+
       -- read the next bit from the register head_intern and assign it to current_hec_bit
       -- keep in mind to read the bits from the register in reverse order (start with bit 31, finish with bit 0)
       if (hec_enable = '1') then
         current_hec_bit <= head_intern(31 - (to_integer(unsigned(hg_cnt_val)) - 1));
       end if;
 
-      -- increment counters always (we always reset before using the counters anyway)
-      hg_cnt_val  <= std_logic_vector(unsigned(hg_cnt_val) + 1);
-      out_cnt_val <= std_logic_vector(unsigned(out_cnt_val) + 1);
+      -- if output_head is on, keep outputting the next bit of hec_val to head_data
+      -- keep in mind to read the bits from hec_val in reverse order (start with bit 7, finish with bit 0)
+      -- increment the counter for the output
+      if (output_head = '1') then
+        out_cnt_val <= std_logic_vector(unsigned(out_cnt_val) + 1);
+      end if;
 
+      -- increment input counter always (we always reset before using the counter anyway)
+      hg_cnt_val <= std_logic_vector(unsigned(hg_cnt_val) + 1);
     end if;
   end process;
 
