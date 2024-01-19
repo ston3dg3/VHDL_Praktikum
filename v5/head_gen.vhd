@@ -87,9 +87,9 @@ begin
 
       -- reset output counter if output_head is on
       if (output_head = '1') then
-        out_cnt_val <= (others => '0');
-      else
         out_cnt_val <= std_logic_vector(to_unsigned(to_integer(unsigned(out_cnt_val)) + 1, out_cnt_val'length));
+      else
+        out_cnt_val <= (others => '0');
       end if;
 
       -- reset HEC counter, import head data to an internal register head_intern, reset HEC generator
