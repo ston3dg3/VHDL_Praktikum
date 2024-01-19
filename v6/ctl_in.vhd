@@ -80,6 +80,11 @@ begin
         -- data_write state (no branches)
       when data_write =>
         next_state <= waiting;
+
+        -- undefined behaviour (go back to init state)
+      when others =>
+        next_state <= init;
+
     end case;
 
     -- ==================== Ausgangslogik ===============================
@@ -149,6 +154,14 @@ begin
         inc_aal1    <= '0';
         sel         <= "00"; -- Ausgabe der Daten vom S/P Wandler
         we_fifo     <= '1';
+
+        -- undefined behaviour (go back to init state)
+      when others =>
+        ready       <= '0';
+        output_head <= '0';
+        inc_aal1    <= '0';
+        sel         <= "00"; -- egal
+        we_fifo     <= '0';
 
     end case;
   end process p1;
