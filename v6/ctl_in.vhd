@@ -9,15 +9,14 @@ use ieee.numeric_std.all;
 entity ctl_in is
   port
   (
-    ready      : out std_logic;
-    set_header : in std_logic;
-    head_in    : in std_logic_vector(31 downto 0);
-    d_clk      : in std_logic;
-    res        : in std_logic;
-    data       : in std_logic;
-    we_fifo    : out std_logic;
-    fifo_data  : out std_logic_vector(7 downto 0)
-  );
+    clk         : in std_logic;
+    res         : in std_logic;
+    hg_done     : in std_logic;
+    ready       : out std_logic;
+    output_head : out std_logic;
+    inc_aal1    : out std_logic;
+    sel         : out std_logic_vector(1 downto 0);
+    we_fifo     : out std_logic);
 end entity ctl_in;
 
 architecture rtl of ctl_in is
@@ -32,11 +31,6 @@ architecture rtl of ctl_in is
   signal cur_state  : state := init; -- init is the safe reset state
   signal next_state : state := init; -- system stays in init when reset
 
-  -- define connection signals
-  signal output_head : std_logic                    := '0';
-  signal hg_done     : std_logic                    := '0';
-  signal inc_aal1    : std_logic                    := '0';
-  signal sel         : std_logic_vector(1 downto 0) := (others => '0');
 begin
 
   -- =================== p1 current state process  ======================
@@ -161,9 +155,9 @@ begin
 
   -- ==================== p2 next state process ====================
 
-  p2 : process (d_clk)
+  p2 : process (clk)
   begin
-    if d_clk'EVENT and d_clk = '1' then
+    if clk'EVENT and clk = '1' then
       if res = '1' then
         cur_state <= init;
       else
@@ -174,7 +168,7 @@ begin
 
   -- ====================== p3 data counter process =================
 
-  p3 : process (d_clk)
+  p3 : process (clk)
   begin
     -- increment data counter if bit was received
     if (ready) then
