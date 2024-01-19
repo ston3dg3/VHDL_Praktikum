@@ -53,7 +53,7 @@ begin
 
   with to_integer(unsigned(hg_cnt_val)) select
   hec_enable <=
-    '1' when 0 | 33,
+    '1' when 1 to 32,
     '0' when others;
 
   with to_integer(unsigned(hg_cnt_val)) select
@@ -73,33 +73,83 @@ begin
 
   -- ========================================= PROCESSES ==========================
 
-  -- read the next bit from the register head_intern and assign it to current_hec_bit
-  -- keep in mind to read the bits from the register in reverse order (start with bit 31, finish with bit 0)
-  process (clk)
-  begin
-    if (clk'event and clk = '1') then
-      if (hec_enable = '1') then
-        current_hec_bit <= head_intern(31 - (to_integer(unsigned(hg_cnt_val)) - 1));
-      end if;
-    end if;
-  end process;
+  -- -- read the next bit from the register head_intern and assign it to current_hec_bit
+  -- -- keep in mind to read the bits from the register in reverse order (start with bit 31, finish with bit 0)
+  -- process (clk)
+  -- begin
+  --   if (clk'event and clk = '1') then
+  --     if (hec_enable = '1') then
+  --       current_hec_bit <= head_intern(31 - (to_integer(unsigned(hg_cnt_val)) - 1));
+  --     end if;
+  --   end if;
+  -- end process;
 
-  -- reset counters and the internal head data register
+  -- -- reset counters and the internal head data register
+  -- process (clk)
+  -- begin
+  --   if (clk'event and clk = '1') then
+  --     if (res = '1') then
+  --       head_intern <= (others => '0');
+  --       out_cnt_val <= (others => '0');
+  --       hg_cnt_val  <= (others => '0');
+  --     end if;
+  --   end if;
+  -- end process;
+
+  -- -- import head data to an internal register head_intern, reset HEC generator, reset counter
+  -- process (clk)
+  -- begin
+  --   if (clk'event and clk = '1') then
+  --     if (set_head = '1') then
+  --       hg_cnt_val  <= (others => '0');
+  --       head_intern <= head_in;
+  --       hec_res     <= '1';
+  --       -- reset counter
+  --       hg_cnt_val <= (others => '0');
+  --     else
+  --       hec_res <= '0';
+  --     end if;
+  --   end if;
+  -- end process;
+
+  -- -- reset output counter if output_head is on
+  -- process (clk)
+  -- begin
+  --   if (clk'event and clk = '1') then
+  --     if (output_head'event and output_head = '1') then
+  --       out_cnt_val <= (others => '0');
+  --     end if;
+  --   end if;
+  -- end process;
+
+  -- -- increment counters
+  -- process (clk)
+  -- begin
+  --   if (clk'event and clk = '1') then
+  --     -- increment input counter always (we always reset before using the counter anyway)
+  --     out_cnt_val <= std_logic_vector(to_unsigned(to_integer(unsigned(out_cnt_val)) + 1, out_cnt_val'length));
+  --     hg_cnt_val  <= std_logic_vector(to_unsigned(to_integer(unsigned(hg_cnt_val)) + 1, hg_cnt_val'length));
+  --   end if;
+  -- end process;
+
+  -- one big process for everything
   process (clk)
   begin
-    if (clk'event and clk = '1') then
+    if (clk'Event and clk = '1') then
+
+      -- reset counters and the internal head data register
       if (res = '1') then
         head_intern <= (others => '0');
         out_cnt_val <= (others => '0');
         hg_cnt_val  <= (others => '0');
       end if;
-    end if;
-  end process;
 
-  -- import head data to an internal register head_intern, reset HEC generator, reset counter
-  process (clk)
-  begin
-    if (clk'event and clk = '1') then
+      -- reset output counter if output_head is on
+      if (output_head'event and output_head = '1') then
+        out_cnt_val <= (others => '0');
+      end if;
+
+      -- reset HEC counter, import head data to an internal register head_intern, reset HEC generator
       if (set_head = '1') then
         hg_cnt_val  <= (others => '0');
         head_intern <= head_in;
@@ -109,26 +159,17 @@ begin
       else
         hec_res <= '0';
       end if;
-    end if;
-  end process;
 
-  -- reset output counter if output_head is on
-  process (clk)
-  begin
-    if (clk'event and clk = '1') then
-      if (output_head'event and output_head = '1') then
-        out_cnt_val <= (others => '0');
+      -- read the next bit from the register head_intern and assign it to current_hec_bit
+      -- keep in mind to read the bits from the register in reverse order (start with bit 31, finish with bit 0)
+      if (hec_enable = '1') then
+        current_hec_bit <= head_intern(31 - (to_integer(unsigned(hg_cnt_val)) - 1));
       end if;
-    end if;
-  end process;
 
-  -- increment counters
-  process (clk)
-  begin
-    if (clk'event and clk = '1') then
       -- increment input counter always (we always reset before using the counter anyway)
-      out_cnt_val <= std_logic_vector(unsigned(out_cnt_val) + 1);
-      hg_cnt_val  <= std_logic_vector(unsigned(hg_cnt_val) + 1);
+      out_cnt_val <= std_logic_vector(to_unsigned(to_integer(unsigned(out_cnt_val)) + 1, out_cnt_val'length));
+      hg_cnt_val  <= std_logic_vector(to_unsigned(to_integer(unsigned(hg_cnt_val)) + 1, hg_cnt_val'length));
+
     end if;
   end process;
 
