@@ -61,14 +61,14 @@ begin
     '1' when 33,
     '0' when others;
 
-  -- get the first 4 bits of the head_intern register and assign them to head_data if out_cnt_val is between 0 and 3 inclusive, when its 4, set to HEC, otherwise set to 0
+  -- get the first 4 Bytes of the head_intern register and assign them to head_data if out_cnt_val is between 1 and 4 inclusive, when its 5, set to HEC, otherwise set to 0
   with to_integer(unsigned(out_cnt_val)) select
   head_data <=
-    head_intern(31 downto 24) when 0,
-    head_intern(23 downto 16) when 1,
-    head_intern(15 downto 8) when 2,
-    head_intern(7 downto 0) when 3,
-    hec_val when 4,
+    head_intern(31 downto 24) when 1,
+    head_intern(23 downto 16) when 2,
+    head_intern(15 downto 8) when 3,
+    head_intern(7 downto 0) when 4,
+    hec_val when 5,
     (others => '0') when others;
 
   -- ========================================= PROCESSES ==========================
