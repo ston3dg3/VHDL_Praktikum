@@ -20,6 +20,11 @@ begin
     if clk'EVENT and clk = '1' then
 
       -- Fill in here
+      if (res = '1') then
+        internal_reg <= "00000000"; -- reset register
+      else
+        internal_reg <= internal_reg(6 downto 0) & d_in; -- shift one bit left and add new bit
+      end if;
 
     end if;
   end process r;
