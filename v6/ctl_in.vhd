@@ -173,6 +173,7 @@ begin
     if clk'EVENT and clk = '1' then
       if res = '1' then
         cur_state <= init;
+        data_cnt  <= (others => '0');
       else
         cur_state <= next_state;
       end if;
@@ -184,11 +185,14 @@ begin
   p3 : process (clk)
   begin
     -- increment data counter if bit was received
-    if (ready) then
-      data_cnt <= std_logic_vector(to_unsigned(to_integer(unsigned(data_cnt)) + 1, data_cnt'length));
-    else
-      data_cnt <= (others => '0');
+    if clk'EVENT and clk = '1' then
+      if unsigned(data_cnt) = 375 then
+        data_cnt <= (others => '0');
+      elsif cur_state /= init then
+        data_cnt <= std_logic_vector(to_unsigned(to_integer(unsigned(data_cnt)) + 1, data_cnt'length));
+      end if;
     end if;
+
   end process p3;
 
 end architecture;
