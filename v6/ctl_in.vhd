@@ -43,47 +43,58 @@ begin
       when init =>
         if (hg_done = '1') then
           next_state <= start;
+          report "going to start state";
         else
           next_state <= init;
+          report "staying in init state";
         end if;
 
         -- start state (no branches)
       when start =>
         next_state <= head_write;
+        report "going to head_write state";
 
         -- head_write state (one branch)
       when head_write =>
         if (to_integer(unsigned(data_cnt)) = 4) then
           next_state <= new_aal1;
+          report "going to new_aal1 state";
         else
           next_state <= head_write;
+          report "staying in head_write state";
         end if;
 
         -- new_aal1 state (no branches)
       when new_aal1 =>
         next_state <= aal1_write;
+        report "going to aal1_write state";
 
         -- aal1_write state (no branches)
       when aal1_write =>
         next_state <= waiting;
+        report "going to waiting state";
 
         -- waiting state (two branches)
       when waiting =>
         if (data_cnt(2 downto 0) = "111") then
           if (to_integer(unsigned(data_cnt)) = 375) then
             next_state <= last_byte;
+            report "going to last_byte state";
           else
             next_state <= data_write;
+            report "going to data_write state";
           end if;
         end if;
 
         -- data_write state (no branches)
       when data_write =>
         next_state <= waiting;
+        report "going to waiting state";
 
         -- undefined behaviour (go back to init state)
       when others =>
         next_state <= init;
+        report "going to init state";
 
     end case;
 
