@@ -22,7 +22,7 @@ end entity ctl_in;
 architecture rtl of ctl_in is
 
   -- define data counter
-  signal data_cnt : std_logic_vector(9 downto 0) := (others => '0');
+  signal data_cnt : std_logic_vector(8 downto 0) := (others => '0');
 
   -- define states for the FSM
   type state is (init, start, head_write, new_aal1, aal1_write, waiting, data_write, last_byte);
@@ -35,7 +35,7 @@ begin
 
   -- =================== p1 current state process  ======================
 
-  p1 : process (cur_state, data_cnt)
+  p1 : process (cur_state, data_cnt, hg_done)
   begin
     case cur_state is
 
@@ -91,10 +91,15 @@ begin
         next_state <= waiting;
         report "going to waiting state";
 
+        -- last_byte state (no branches)
+      when last_byte =>
+        next_state <= head_write;
+        report "NEW AAL1 WRITE: going to head_write state";
+
         -- undefined behaviour (go back to init state)
       when others =>
         next_state <= init;
-        report "going to init state";
+        report "ERROR, going to init state";
 
     end case;
 
@@ -186,24 +191,39 @@ begin
         cur_state <= init;
         data_cnt  <= (others => '0');
       else
+
+        -- update current state
         cur_state <= next_state;
+
+        -- increment data counter if bit was received
+        if to_integer(unsigned(data_cnt)) = 375 then
+          data_cnt <= (others => '0');
+        elsif cur_state /= init then
+          data_cnt <= std_logic_vector(to_unsigned(to_integer(unsigned(data_cnt)) + 1, data_cnt'length));
+
+        end if;
       end if;
     end if;
   end process p2;
 
+  -- I have dedided to put data counter increment logic in the p2 process
+  -- because it has almost the same structure as p2 process (it requires to check reset signal)
+
   -- ====================== p3 data counter process =================
 
-  p3 : process (clk)
-  begin
-    -- increment data counter if bit was received
-    if clk'EVENT and clk = '1' then
-      if unsigned(data_cnt) = 375 then
-        data_cnt <= (others => '0');
-      elsif cur_state /= init then
-        data_cnt <= std_logic_vector(to_unsigned(to_integer(unsigned(data_cnt)) + 1, data_cnt'length));
-      end if;
-    end if;
+  -- OLD CODE:
 
-  end process p3;
+  -- p3 : process (clk)
+  -- begin
+  --   -- increment data counter if bit was received
+  --   if clk'EVENT and clk = '1' then
+  --     if to_integer(unsigned(data_cnt)) = 375 then
+  --       data_cnt <= (others => '0');
+  --     elsif cur_state /= init then
+  --       data_cnt <= std_logic_vector(to_unsigned(to_integer(unsigned(data_cnt)) + 1, data_cnt'length));
+  --     end if;
+  --   end if;
+
+  -- end process p3;
 
 end architecture;
