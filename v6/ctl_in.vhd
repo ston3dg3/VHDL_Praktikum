@@ -22,7 +22,7 @@ end entity ctl_in;
 architecture rtl of ctl_in is
 
   -- define data counter
-  signal data_cnt : std_logic_vector(8 downto 0) := (others => '0');
+  signal data_cnt : std_logic_vector(8 downto 0) := (others => '0'); -- 375 requires 9 bits (max value 512)
 
   -- define states for the FSM
   type state is (init, start, head_write, new_aal1, aal1_write, waiting, data_write, last_byte);
