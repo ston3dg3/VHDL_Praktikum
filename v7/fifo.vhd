@@ -110,7 +110,7 @@ begin
       read_ptr  <= (others => '0');
       read_add1 <= (others => '0');
     elsif rising_edge(clk_out) then
-      if re = '1' then
+      if re = '1' and empty_flag = '0' then
         data_out  <= Mem(to_integer(unsigned(read_ptr))); -- get the Mem content at address read_ptr to output
         read_add1 <= read_ptr; -- update sync signal
         read_ptr  <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod MEM_SIZE, read_ptr'length)); -- update read_ptr
@@ -125,7 +125,7 @@ begin
       write_ptr  <= (others => '0');
       write_add1 <= (others => '0');
     elsif rising_edge(clk_in) then
-      if we = '1' then
+      if we = '1' and full_flag = '0' then
         Mem(to_integer(unsigned(write_ptr))) <= data_in; -- write data_in to Mem at address write_ptr
         write_add1                           <= write_ptr; -- update sync signal
         write_ptr                            <= std_logic_vector(to_unsigned((to_integer(unsigned(write_ptr)) + 1) mod MEM_SIZE, write_ptr'length)); -- update write_ptr
