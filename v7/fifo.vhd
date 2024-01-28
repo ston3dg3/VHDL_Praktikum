@@ -77,21 +77,29 @@ begin
 
       -- detect if we have read a whole packet
       if (to_integer(unsigned(write_ptr) - unsigned(read_ptr)) < level) then
-        level_reached_flag <= '1';
-      else
         level_reached_flag <= '0';
+      else
+        level_reached_flag <= '1';
       end if;
 
-      -- if both pointer are equal, when MSB is 1 then FIFO is full, otherwise it is empty
+      -- if both pointers are equal, when MSB is 1 then FIFO is full
       if write_ptr = read_add1 then
         if (write_ptr(ld_depth) = '1') then
-          full_flag  <= '1';
-          empty_flag <= '0';
+          full_flag <= '1';
         else
-          full_flag  <= '0';
-          empty_flag <= '1';
+          full_flag <= '0';
         end if;
       end if;
+
+      -- if both pointers are equal, when MSB is 0 then FIFO is empty
+      if read_ptr = write_add1 then
+        if (read_ptr(ld_depth) = '0') then
+          empty_flag <= '1';
+        else
+          empty_flag <= '0';
+        end if;
+      end if;
+
     end if;
   end process comp;
 
@@ -105,7 +113,7 @@ begin
       if re = '1' then
         data_out <= Mem(to_integer(unsigned(read_ptr))); -- get the Mem content at address read_ptr to output
         read_ptr <= read_add1; -- update sync signal
-        read_ptr <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr))) mod MEM_SIZE, read_ptr'length)); -- update read_ptr
+        read_ptr <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod MEM_SIZE, read_ptr'length)); -- update read_ptr
       end if;
     end if;
   end process read_proc;
