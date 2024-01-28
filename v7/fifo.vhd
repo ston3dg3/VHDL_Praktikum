@@ -40,7 +40,7 @@ architecture rtl of fifo is
   subtype Byte is std_logic_vector(7 downto 0);
 
   -- Memory for storing the data (size is 2^ld_depth)
-  type memory is array(2 ** ld_depth - 1 downto 0) of Byte;
+  type memory is array(0 to 2 ** ld_depth - 1) of Byte;
   signal Mem : memory;
 
   -- write and read pointers (size is one bit larger to detect the full/empty states)
@@ -115,7 +115,7 @@ begin
       read_add1 <= (others => '0');
     elsif rising_edge(clk_out) then
       if re = '1' and empty_flag = '0' then
-        data_out  <= Mem(to_integer(unsigned(read_ptr))); -- get the Mem content at address read_ptr to output
+        data_out  <= Mem(to_integer(unsigned(read_ptr(ld_depth - 1 downto 0)))); -- get the Mem content at address read_ptr to output
         read_add1 <= read_ptr; -- update sync signal
         read_ptr  <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod pointer_reset, read_ptr'length)); -- update read_ptr
       end if;
@@ -130,9 +130,9 @@ begin
       write_add1 <= (others => '0');
     elsif rising_edge(clk_in) then
       if we = '1' and full_flag = '0' then
-        Mem(to_integer(unsigned(write_ptr))) <= data_in; -- write data_in to Mem at address write_ptr
-        write_add1                           <= write_ptr; -- update sync signal
-        write_ptr                            <= std_logic_vector(to_unsigned((to_integer(unsigned(write_ptr)) + 1) mod pointer_reset, write_ptr'length)); -- update write_ptr
+        Mem(to_integer(unsigned(write_ptr(ld_depth - 1 downto 0)))) <= data_in; -- write data_in to Mem at address write_ptr
+        write_add1                                                  <= write_ptr; -- update sync signal
+        write_ptr                                                   <= std_logic_vector(to_unsigned((to_integer(unsigned(write_ptr)) + 1) mod pointer_reset, write_ptr'length)); -- update write_ptr
       end if;
     end if;
   end process write_proc;
