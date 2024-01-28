@@ -18,7 +18,7 @@ architecture stimul of fifo_tb is
     port
     (
       clk_in        : in std_logic; -- clock (clock 1 for writing the data)
-      clk_out       : out std_logic; -- clock out (clock 2 for reading the data)
+      clk_out       : in std_logic; -- clock out (clock 2 for reading the data)
       res           : in std_logic; -- reset
       data_in       : in std_logic_vector(7 downto 0); -- incoming packet data (1 Byte per clock)
       we            : in std_logic; -- write enable

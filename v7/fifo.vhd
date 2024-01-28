@@ -16,7 +16,7 @@ entity fifo is
   port
   (
     clk_in        : in std_logic; -- clock (clock 1 for writing the data)
-    clk_out       : out std_logic; -- clock out (clock 2 for reading the data)
+    clk_out       : in std_logic; -- clock out (clock 2 for reading the data)
     res           : in std_logic; -- reset
     data_in       : in std_logic_vector(7 downto 0); -- incoming packet data (1 Byte per clock)
     we            : in std_logic; -- write enable
@@ -74,10 +74,17 @@ begin
       empty_flag         <= '1'; -- synced with clk_out
       level_reached_flag <= '0'; -- synced with clk_out
     else
-      level_reached_flag <= '0' when to_integer(unsigned(write_ptr) - unsigned(read_ptr)) < level else
-        '1'; -- detect if we have read a whole packet
+
+      -- detect if we have read a whole packet
+      if (to_integer(unsigned(write_ptr) - unsigned(read_ptr)) < level) then
+        level_reached_flag <= '1';
+      else
+        level_reached_flag <= '0';
+      end if;
+
+      -- if both pointer are equal, when MSB is 1 then FIFO is full, otherwise it is empty
       if write_ptr = read_add1 then
-        if (write_ptr(ld_depth) = '1') then -- if MSB is 1 then FIFO is full, otherwise it is empty
+        if (write_ptr(ld_depth) = '1') then
           full_flag  <= '1';
           empty_flag <= '0';
         else
