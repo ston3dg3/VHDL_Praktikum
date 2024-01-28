@@ -1,86 +1,126 @@
-LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
-USE IEEE.numeric_std.ALL;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
-ENTITY fifo_tb IS
-END fifo_tb;
+entity fifo_tb is
+end fifo_tb;
 
-ARCHITECTURE stimul OF fifo_tb IS
+architecture stimul of fifo_tb is
 
-	-- Component declaration
-	
-	SIGNAL clk1,clk2,res :std_logic := '0';
-	SIGNAL we,re :std_logic := '0';
-	SIGNAL full,empty,lr : std_logic;
-	SIGNAL data1, data2 : std_logic_vector (7 DOWNTO 0):="00000000";
-	CONSTANT t1 : time := 25 ns;
-	CONSTANT t2 : time := 40 ns;
-	
-BEGIN
+  -- Component declaration
+  -- FIFO entity for storing incoming packets
+  component fifo is
+    generic
+    (
+      ld_depth : integer := 3; -- size of the fifo storage is 2^ld_depth
+      level    : integer := 5 -- level at which the level_reached flag is set (one whole packet has been read)
+    );
+    port
+    (
+      clk_in        : in std_logic; -- clock (clock 1 for writing the data)
+      clk_out       : out std_logic; -- clock out (clock 2 for reading the data)
+      res           : in std_logic; -- reset
+      data_in       : in std_logic_vector(7 downto 0); -- incoming packet data (1 Byte per clock)
+      we            : in std_logic; -- write enable
+      re            : in std_logic; -- read enable
+      data_out      : out std_logic_vector(7 downto 0); -- outgoing packet data (1 Byte per clock)
+      empty         : out std_logic; -- empty flag
+      full          : out std_logic; -- full flag
+      level_reached : out std_logic -- level reached flag
+    );
+  end component fifo;
 
-	-- Component instantiation
-	mut: ...
+  signal clk1, clk2, res : std_logic := '0';
+  signal we, re          : std_logic := '0';
+  signal full, empty, lr : std_logic;
+  signal data1, data2    : std_logic_vector (7 downto 0) := "00000000";
+  constant t1            : time                          := 25 ns;
+  constant t2            : time                          := 40 ns;
 
-	c1: PROCESS
-	BEGIN
-		WAIT FOR t1;
-		clk1 <= NOT clk1;
-	END PROCESS c1;
-	c2: PROCESS
-	BEGIN
-		WAIT FOR t2;
-		clk2 <= NOT clk2;
-	END PROCESS c2;
-	res <= '1' AFTER 30 ns, '0' AFTER 200 ns;
-	
-	sw: PROCESS
-		VARIABLE val : unsigned(7 DOWNTO 0) := "00000001";
-	BEGIN
-	    WHILE true loop
-		WAIT FOR 10*t1;
-		we <= '1';
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		data1 <= STD_LOGIC_VECTOR(val);
-		val := val+1;
-		WAIT FOR 2*t1;
-		we <= '0';
-		WAIT FOR 8*t1;
-	    END LOOP;
-	END PROCESS;
-	sr: PROCESS
-	BEGIN
-	    WHILE true loop
-		re <= '0';
-		WAIT FOR 20*t2;
-		re <= '1';
-		WAIT FOR 16*t2;
-	    END LOOP;
-	END PROCESS;
-	
-END stimul;
+begin
+
+  -- Component instantiation
+  mut : fifo
+  generic
+  map
+  (
+  ld_depth => 3,
+  level    => 5
+  )
+  port map
+  (
+    clk_in        => clk1,
+    clk_out       => clk2,
+    res           => res,
+    data_in       => data1,
+    we            => we,
+    re            => re,
+    data_out      => data2,
+    empty         => empty,
+    full          => full,
+    level_reached => lr
+  );
+
+  c1 : process
+  begin
+    wait for t1;
+    clk1 <= not clk1;
+  end process c1;
+  c2 : process
+  begin
+    wait for t2;
+    clk2 <= not clk2;
+  end process c2;
+  res <= '1' after 30 ns, '0' after 200 ns;
+
+  sw : process
+    variable val : unsigned(7 downto 0) := "00000001";
+  begin
+    while true loop
+      wait for 10 * t1;
+      we    <= '1';
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      data1 <= std_logic_vector(val);
+      val := val + 1;
+      wait for 2 * t1;
+      we <= '0';
+      wait for 8 * t1;
+    end loop;
+  end process;
+  sr : process
+  begin
+    while true loop
+      re <= '0';
+      wait for 20 * t2;
+      re <= '1';
+      wait for 16 * t2;
+    end loop;
+  end process;
+
+end stimul;
