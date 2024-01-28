@@ -111,9 +111,9 @@ begin
       read_add1 <= (others => '0');
     elsif rising_edge(clk_out) then
       if re = '1' then
-        data_out <= Mem(to_integer(unsigned(read_ptr))); -- get the Mem content at address read_ptr to output
-        read_ptr <= read_add1; -- update sync signal
-        read_ptr <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod MEM_SIZE, read_ptr'length)); -- update read_ptr
+        data_out  <= Mem(to_integer(unsigned(read_ptr))); -- get the Mem content at address read_ptr to output
+        read_add1 <= read_ptr; -- update sync signal
+        read_ptr  <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod MEM_SIZE, read_ptr'length)); -- update read_ptr
       end if;
     end if;
   end process read_proc;
