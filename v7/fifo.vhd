@@ -84,7 +84,7 @@ begin
 
       -- if both pointers are equal, when MSB is 1 then FIFO is full
       if write_ptr(ld_depth - 1 downto 0) = read_add1(ld_depth - 1 downto 0) then
-        if ((write_ptr(ld_depth) xor read_add1(ld_depth)) = '1') then
+        if ((write_ptr(ld_depth) xor read_add1(ld_depth))) = '1' then
           full_flag <= '1';
         else
           full_flag <= '0';
@@ -93,15 +93,50 @@ begin
 
       -- if both pointers are equal, when MSB is 0 then FIFO is empty
       if read_ptr(ld_depth - 1 downto 0) = write_add1(ld_depth - 1 downto 0) then
-        if ((read_ptr(ld_depth) xor write_add1(ld_depth)) = '1') then
-          empty_flag <= '0';
-        else
+        if ((read_ptr(ld_depth) nor write_add1(ld_depth))) = '1' then
           empty_flag <= '1';
+        else
+          empty_flag <= '0';
         end if;
       end if;
 
     end if;
   end process comp;
+
+  --   -- writing part of the component (synced with clk_in)
+  --   comp_write : process (res, write_ptr, read_add1)
+  --   begin
+  --     if res = '1' then -- async reset
+  --       full_flag <= '0'; -- synced with clk_in
+  --     else
+  --       -- if both pointers are equal, when MSB is 1 then FIFO is full
+  --       if write_ptr(ld_depth - 1 downto 0) = read_add1(ld_depth - 1 downto 0) then
+  --         if ((write_ptr(ld_depth) xor read_add1(ld_depth))) = '1' then
+  --           full_flag <= '1';
+  --         else
+  --           full_flag <= '0';
+  --         end if;
+  --       end if;
+  --     end if;
+  --   end process comp_write;
+
+  --   -- reading part of the component (synced with clk_out)
+  --   comp_read : process (res, read_ptr, write_add1)
+  --   begin
+  --     if res = '1' then -- async reset
+  --       empty_flag         <= '1'; -- synced with clk_out
+  --       level_reached_flag <= '0'; -- synced with clk_out
+  --     else
+  --       -- if both pointers are equal, when MSB is 0 then FIFO is empty
+  --       if read_ptr(ld_depth - 1 downto 0) = write_add1(ld_depth - 1 downto 0) then
+  --         if ((read_ptr(ld_depth) nor write_add1(ld_depth))) = '1' then
+  --           empty_flag <= '0';
+  --         else
+  --           empty_flag <= '1';
+  --         end if;
+  --       end if;
+  --     end if;
+  --   end process comp_read;
 
   -- read process with takt clk_out
   read_proc : process (clk_out, res)
