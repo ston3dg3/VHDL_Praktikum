@@ -83,8 +83,8 @@ begin
       end if;
 
       -- if both pointers are equal, when MSB is 1 then FIFO is full
-      if write_ptr = read_add1 then
-        if (write_ptr(ld_depth) = '1') then
+      if write_ptr(ld_depth - 1 downto 0) = read_add1(ld_depth - 1 downto 0) then
+        if ((write_ptr(ld_depth) xor read_add1(ld_depth)) = '1') then
           full_flag <= '1';
         else
           full_flag <= '0';
@@ -92,11 +92,11 @@ begin
       end if;
 
       -- if both pointers are equal, when MSB is 0 then FIFO is empty
-      if read_ptr = write_add1 then
-        if (read_ptr(ld_depth) = '0') then
-          empty_flag <= '1';
-        else
+      if read_ptr(ld_depth - 1 downto 0) = write_add1(ld_depth - 1 downto 0) then
+        if ((read_ptr(ld_depth) xor write_add1(ld_depth)) = '1') then
           empty_flag <= '0';
+        else
+          empty_flag <= '1';
         end if;
       end if;
 
