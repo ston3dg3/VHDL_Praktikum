@@ -71,7 +71,7 @@ begin
 
   -- combinatorial process for the comparator (outputs flags)
   -- comp is treated as one element for both clk_in and clk_out
-  comp : process (res, write_ptr, read_ptr_sync, read_ptr, write_add1)
+  comp : process (res, write_ptr, read_ptr_sync, read_ptr, write_ptr_sync)
   begin
     if res = '1' then -- async reset
       full_flag          <= '0'; -- synced with clk_in
@@ -80,7 +80,7 @@ begin
     else
 
       -- detect if we have read a whole packet
-      if (to_integer(unsigned(write_add1) - unsigned(read_ptr)) < level) then
+      if (to_integer(unsigned(write_ptr_sync) - unsigned(read_ptr)) < level) then
         level_reached_flag <= '0';
       else
         level_reached_flag <= '1';
@@ -98,8 +98,8 @@ begin
       end if;
 
       -- if both pointers are equal, when MSB is 0 then FIFO is empty
-      if read_ptr(ld_depth - 1 downto 0) = write_add1(ld_depth - 1 downto 0) then
-        if ((read_ptr(ld_depth) nor write_add1(ld_depth))) = '1' then
+      if read_ptr(ld_depth - 1 downto 0) = write_ptr_sync(ld_depth - 1 downto 0) then
+        if ((read_ptr(ld_depth) nor write_ptr_sync(ld_depth))) = '1' then
           empty_flag <= '1';
         else
           empty_flag <= '0';
@@ -120,10 +120,10 @@ begin
       read_ptr_sync <= (others => '0');
     elsif rising_edge(clk_out) then
       if re = '1' and empty_flag = '0' then
-        data_out      <= Mem(to_integer(unsigned(read_ptr(ld_depth - 1 downto 0)))); -- get the Mem content at address read_ptr to output
-        read_add1     <= read_ptr; -- update syncing signal
-        read_ptr_sync <= read_add1; -- update synced signal
-        read_ptr      <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod pointer_reset, read_ptr'length)); -- update read_ptr
+        data_out       <= Mem(to_integer(unsigned(read_ptr(ld_depth - 1 downto 0)))); -- get the Mem content at address read_ptr to output
+        write_add1     <= write_ptr; -- update syncing signal
+        write_ptr_sync <= write_add1; -- update synced signal
+        read_ptr       <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod pointer_reset, read_ptr'length)); -- update read_ptr
       end if;
     end if;
   end process read_proc;
@@ -138,8 +138,8 @@ begin
     elsif rising_edge(clk_in) then
       if we = '1' and full_flag = '0' then
         Mem(to_integer(unsigned(write_ptr(ld_depth - 1 downto 0)))) <= data_in; -- write data_in to Mem at address write_ptr
-        write_add1                                                  <= write_ptr; -- update syncing signal
-        write_ptr_sync                                              <= write_add1; -- update synced signal
+        read_add1                                                   <= read_ptr; -- update syncing signal
+        read_ptr_sync                                               <= read_add1; -- update synced signal
         write_ptr                                                   <= std_logic_vector(to_unsigned((to_integer(unsigned(write_ptr)) + 1) mod pointer_reset, write_ptr'length)); -- update write_ptr
       end if;
     end if;
