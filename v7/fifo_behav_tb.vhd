@@ -2,14 +2,14 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity fifo_tb is
-end fifo_tb;
+entity fifo_behav_tb is
+end fifo_behav_tb;
 
-architecture stimul of fifo_tb is
+architecture stimul of fifo_behav_tb is
 
   -- Component declaration
   -- FIFO entity for storing incoming packets
-  component fifo is
+  component fifo_behav is
     generic
     (
       ld_depth : integer := 3; -- size of the fifo storage is 2^ld_depth
@@ -28,7 +28,7 @@ architecture stimul of fifo_tb is
       full          : out std_logic; -- full flag
       level_reached : out std_logic -- level reached flag
     );
-  end component fifo;
+  end component fifo_behav;
 
   signal clk1, clk2, res : std_logic := '0';
   signal we, re          : std_logic := '0';
@@ -40,7 +40,7 @@ architecture stimul of fifo_tb is
 begin
 
   -- Component instantiation
-  mut : fifo
+  mut : fifo_behav
   generic
   map
   (

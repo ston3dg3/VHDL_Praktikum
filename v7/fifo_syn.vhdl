@@ -4,7 +4,7 @@
 -- Date        : Mon Jan 29 17:57:49 2024
 -- Host        : prakt14 running 64-bit Ubuntu 20.04.6 LTS
 -- Command     : write_vhdl /home/ge42hux/praktikum_vhdl/Praktikum_VHDL/versuche/v7/fifo_syn.vhdl
--- Design      : fifo
+-- Design      : fifo_syn
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
 -- Device      : xc7vx485tffg1157-1
@@ -13,7 +13,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
-entity fifo is
+entity fifo_syn is
   port (
     clk_in : in STD_LOGIC;
     clk_out : in STD_LOGIC;
@@ -27,16 +27,16 @@ entity fifo is
     level_reached : out STD_LOGIC
   );
   attribute NotValidForBitStream : boolean;
-  attribute NotValidForBitStream of fifo : entity is true;
+  attribute NotValidForBitStream of fifo_syn : entity is true;
   attribute ECO_CHECKSUM : string;
-  attribute ECO_CHECKSUM of fifo : entity is "1612cf73";
+  attribute ECO_CHECKSUM of fifo_syn : entity is "1612cf73";
   attribute ld_depth : integer;
-  attribute ld_depth of fifo : entity is 3;
+  attribute ld_depth of fifo_syn : entity is 3;
   attribute level : integer;
-  attribute level of fifo : entity is 5;
-end fifo;
+  attribute level of fifo_syn : entity is 5;
+end fifo_syn;
 
-architecture STRUCTURE of fifo is
+architecture STRUCTURE of fifo_syn is
   signal Mem_reg_0_7_0_5_i_1_n_0 : STD_LOGIC;
   signal Mem_reg_0_7_0_5_n_0 : STD_LOGIC;
   signal Mem_reg_0_7_0_5_n_1 : STD_LOGIC;

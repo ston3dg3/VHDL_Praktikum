@@ -7,7 +7,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 -- FIFO entity for storing incoming packets
-entity fifo is
+entity fifo_behav is
   generic
   (
     ld_depth : integer := 3; -- size of the fifo storage is 2^ld_depth
@@ -26,9 +26,9 @@ entity fifo is
     full          : out std_logic; -- full flag
     level_reached : out std_logic -- level reached flag
   );
-end fifo;
+end fifo_behav;
 
-architecture rtl of fifo is
+architecture rtl of fifo_behav is
 
   -- ====================================== CONSTANTS ======================================
 
