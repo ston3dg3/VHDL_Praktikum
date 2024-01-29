@@ -115,15 +115,13 @@ begin
   read_proc : process (clk_out, res)
   begin
     if res = '1' then -- async reset
-      read_ptr      <= (others => '0');
-      read_add1     <= (others => '0');
-      read_ptr_sync <= (others => '0');
+      read_ptr <= (others => '0');
     elsif rising_edge(clk_out) then
+      write_add1     <= write_ptr; -- update syncing signal
+      write_ptr_sync <= write_add1; -- update synced signal
       if re = '1' and empty_flag = '0' then
-        data_out       <= Mem(to_integer(unsigned(read_ptr(ld_depth - 1 downto 0)))); -- get the Mem content at address read_ptr to output
-        write_add1     <= write_ptr; -- update syncing signal
-        write_ptr_sync <= write_add1; -- update synced signal
-        read_ptr       <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod pointer_reset, read_ptr'length)); -- update read_ptr
+        data_out <= Mem(to_integer(unsigned(read_ptr(ld_depth - 1 downto 0)))); -- get the Mem content at address read_ptr to output
+        read_ptr <= std_logic_vector(to_unsigned((to_integer(unsigned(read_ptr)) + 1) mod pointer_reset, read_ptr'length)); -- update read_ptr
       end if;
     end if;
   end process read_proc;
@@ -132,14 +130,12 @@ begin
   write_proc : process (clk_in, res)
   begin
     if res = '1' then -- async reset
-      write_ptr      <= (others => '0');
-      write_add1     <= (others => '0');
-      write_ptr_sync <= (others => '0');
+      write_ptr <= (others => '0');
     elsif rising_edge(clk_in) then
+      read_add1     <= read_ptr; -- update syncing signal
+      read_ptr_sync <= read_add1; -- update synced signal
       if we = '1' and full_flag = '0' then
         Mem(to_integer(unsigned(write_ptr(ld_depth - 1 downto 0)))) <= data_in; -- write data_in to Mem at address write_ptr
-        read_add1                                                   <= read_ptr; -- update syncing signal
-        read_ptr_sync                                               <= read_add1; -- update synced signal
         write_ptr                                                   <= std_logic_vector(to_unsigned((to_integer(unsigned(write_ptr)) + 1) mod pointer_reset, write_ptr'length)); -- update write_ptr
       end if;
     end if;
