@@ -13,7 +13,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
-entity fifo_syn is
+entity fifo_behav is
   port (
     clk_in : in STD_LOGIC;
     clk_out : in STD_LOGIC;
@@ -27,16 +27,16 @@ entity fifo_syn is
     level_reached : out STD_LOGIC
   );
   attribute NotValidForBitStream : boolean;
-  attribute NotValidForBitStream of fifo_syn : entity is true;
+  attribute NotValidForBitStream of fifo_behav : entity is true;
   attribute ECO_CHECKSUM : string;
-  attribute ECO_CHECKSUM of fifo_syn : entity is "1612cf73";
+  attribute ECO_CHECKSUM of fifo_behav : entity is "1612cf73";
   attribute ld_depth : integer;
-  attribute ld_depth of fifo_syn : entity is 3;
+  attribute ld_depth of fifo_behav : entity is 3;
   attribute level : integer;
-  attribute level of fifo_syn : entity is 5;
-end fifo_syn;
+  attribute level of fifo_behav : entity is 5;
+end fifo_behav;
 
-architecture STRUCTURE of fifo_syn is
+architecture STRUCTURE of fifo_behav is
   signal Mem_reg_0_7_0_5_i_1_n_0 : STD_LOGIC;
   signal Mem_reg_0_7_0_5_n_0 : STD_LOGIC;
   signal Mem_reg_0_7_0_5_n_1 : STD_LOGIC;
